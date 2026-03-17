@@ -1,0 +1,30 @@
+[project]
+name = "project-luzanchuk-b25-515"
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+authors = [{ name = "Luzanchuk Victor"}]
+
+[project.scripts]
+myproject = "src.main:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.6",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+select = ["E", "F", "I"]
