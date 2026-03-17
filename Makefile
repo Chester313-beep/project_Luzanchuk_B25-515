@@ -11,3 +11,6 @@ lint:
 
 project:
 	uv run python -m src.main
+
+test:
+	uv run pytest
