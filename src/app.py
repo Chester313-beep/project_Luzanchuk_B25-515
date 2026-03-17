@@ -1,3 +1,5 @@
+import itertools
+
 
 class App:
     def __init__(self, sources, strategy, presenter):
@@ -6,31 +8,20 @@ class App:
         self.presenter = presenter
 
     def run(self):
-        all_items = []
-        source_stats = {}
 
-        for source in self.sources:
-            items = source.fetch()
-            all_items.extend(items)
-            source_stats[source.name] = {
-                'received': len(items),
-                'source_type': source.source_type,
-            }
+        source_iters = [source.fetch() for source in self.sources]
 
-        if not all_items:
-            print("Нет данных ни от одного источника.")
-            return
+        combined = itertools.chain.from_iterable(source_iters)
 
-        self.presenter.display_summary(source_stats)
+        received_stats = {}
+        def count_received(iterable):
+            for item in iterable:
+                src = item.metadata.get('source', 'unknown')
+                received_stats[src] = received_stats.get(src, 0) + 1
+                yield item
 
-        # Используем стратегию
-        processed_items = self.strategy.process(all_items)
+        counted_input = count_received(combined)
 
-        for item in processed_items:
-            source_name = item.metadata.get('source', 'unknown')
-            if source_name not in source_stats:
-                source_stats[source_name] = {'received': 0, 'processed': 0}
-            current = source_stats[source_name].get('processed', 0)
-            source_stats[source_name]['processed'] = current + 1
+        processed_iter = self.strategy.process(counted_input)
 
-        self.presenter.display_results(processed_items, source_stats)
+        self.presenter.display_results(processed_iter, received_stats)

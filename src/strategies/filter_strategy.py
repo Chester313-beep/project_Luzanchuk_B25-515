@@ -3,12 +3,10 @@ from src.strategies.base_strategy import ProcessingStrategy
 
 
 class FilterStrategy(ProcessingStrategy):
-
     def __init__(self, min_length=0):
         self.min_length = min_length
 
     def process(self, items):
-        processed = []
         for item in items:
             if not item.content or len(item.content.strip()) < self.min_length:
                 continue
@@ -22,5 +20,4 @@ class FilterStrategy(ProcessingStrategy):
             for k, v in item.metadata.items():
                 if k not in ('source', 'category'):
                     new_item.metadata[k] = v
-            processed.append(new_item)
-        return processed
+            yield new_item

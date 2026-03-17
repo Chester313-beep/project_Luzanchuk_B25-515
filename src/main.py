@@ -11,7 +11,7 @@ def main():
     config.load({
         "sources": [
             {"type": "demo", "name": "Демо-новости"},
-            {"type": "file", "file_path": "data/news.json", "name": "Новости из файла"}
+            {"type": "file", "file_path": "data/news.jsonl", "name": "Новости из файла"}
         ],
         "strategy": "normalization"
     })
