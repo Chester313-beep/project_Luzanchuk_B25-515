@@ -1,7 +1,8 @@
 ﻿
 import concurrent.futures
 import time
-
+import asyncio
+from src.runner import AppRunner
 from src.config.config import AppConfig
 from src.factories.source_factory import SourceFactory
 from src.parsers.web_parser import WebNewsParser
@@ -9,7 +10,17 @@ from src.presenters.console_presenter import ConsolePresenter
 from src.strategies.filter_strategy import FilterStrategy
 from src.strategies.normalization_strategy import NormalizationStrategy
 
-
+if __name__ == "__main__":
+    runner = AppRunner({
+        "sources": [
+            {"type": "demo", "name": "Демо-новости"},
+            {"type": "file", "file_path": "data/news.jsonl", "name": "Новости из файла"},
+            {"type": "web", "base_url": "https://jsonplaceholder.typicode.com", "name": "Веб-новости"}
+        ],
+        "strategy": "normalization",
+        "mode": "async"
+    })
+    asyncio.run(runner.run_and_print())
 def process_source(source, strategy):
     items = source.fetch()
     return list(strategy.process(items))

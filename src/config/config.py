@@ -13,6 +13,7 @@ class AppConfig:
         self.sources_config = config_dict.get('sources', [])
         self.strategy_name = config_dict.get('strategy', 'normalization')
         self.mode = config_dict.get('mode', 'sequential')
+        self.min_length = config_dict.get('min_length', 5)
 
     @property
     def sources(self):
