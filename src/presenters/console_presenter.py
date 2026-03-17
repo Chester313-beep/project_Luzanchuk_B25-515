@@ -3,7 +3,11 @@ class ConsolePresenter:
     def display_summary(source_stats):
         print("=== Сбор данных завершён ===")
         for name, stat in source_stats.items():
-            print(f"Источник '{name}' (тип неизвестен): получено {stat} записей")
+            if isinstance(stat, dict):
+                received = stat.get('received', stat)
+            else:
+                received = stat
+            print(f"Источник '{name}': получено {received} записей")
 
     @staticmethod
     def display_results(processed_iter, received_stats):
@@ -29,6 +33,8 @@ class ConsolePresenter:
         all_sources = set(received_stats.keys()) | set(processed_stats.keys())
         for src in all_sources:
             received = received_stats.get(src, 0)
+            if isinstance(received, dict):
+                received = received.get('received', 0)
             processed = processed_stats.get(src, 0)
             print(f"Источник '{src}': осталось после обработки {processed} из {received}")
 
