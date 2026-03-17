@@ -3,7 +3,9 @@ name = "project-luzanchuk-b25-515"
 version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "requests>=2.32.5",
+]
 authors = [{ name = "Luzanchuk Victor"}]
 
 [project.scripts]
