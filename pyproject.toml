@@ -25,6 +25,6 @@ dev = [
 ]
 
 [tool.ruff]
-line-length = 88
+line-length = 256
 target-version = "py311"
 select = ["E", "F", "I"]

@@ -1,33 +1,39 @@
-from src.processors.text_processor import NewsProcessor
-from src.sources.mock_source import MockNewsSource
-
-
 class App:
-    def __init__(self):
-        self.source = MockNewsSource(name="Demo News", source_type="mock")
-        self.processor = NewsProcessor()
-    def run(self):
-        items = self.source.fetch()
-        if not items:
-            print("Источник не вернул данных.")
-            return
-        print(f"Получено записей: {len(items)}")
-        processed_items = self.processor.process(items)
-        self._display_results(processed_items, original_count=len(items))
+    def __init__(self, sources, processor):
+        self.sources = sources
+        self.processor = processor
 
-    def _display_results(self, items, original_count):
-        filtered = original_count - len(items)
-        print(f"После обработки осталось записей: {len(items)} "
-        f"(отфильтровано {filtered})")
-        if not items:
-            print("Нет данных для отображения.")
+    def run(self):
+        all_items = []
+        source_stats = {}
+        for source in self.sources:
+            items = source.fetch()
+            all_items.extend(items)
+            source_stats[source.name] = {
+                'received': len(items),
+                'source_type': source.source_type,
+            }
+        if not all_items:
+            print("Нет данных ни от одного источника.")
             return
+        print("=== Сбор данных завершён ===")
+        for name, stat in source_stats.items():
+            print(f"Источник '{name}' ({stat['source_type']}): получено {stat['received']} записей")
+        processed_items = self.processor.process(all_items)
+        for item in processed_items:
+            source_name = item.metadata.get('source', 'unknown')
+            if source_name not in source_stats:
+                source_stats[source_name] = {'received': 0, 'processed': 0}
+            source_stats[source_name]['processed'] = source_stats[source_name].get('processed', 0) + 1
+        print("\n=== Результаты обработки ===")
+        for name, stat in source_stats.items():
+            processed = stat.get('processed', 0)
+            print(f"Источник '{name}': осталось после обработки {processed} из {stat['received']}")
         print("\n--- Обработанные записи ---")
-        for item in items:
+        for item in processed_items:
             print(item)
             print(f"   Содержимое: {item.content[:50]}...")
-            print(f"   Слов в тексте: {item.metadata.get('word_count', 'N/A')}\n")
-        if items:
-            total_words = sum(item.metadata.get('word_count', 0) for item in items)
-            avg_words = total_words / len(items)
-            print(f"Среднее количество слов в записи: {avg_words:.1f}")
+            print(f"   Слов: {item.metadata.get('word_count', 'N/A')}\n")
+        if processed_items:
+            avg_words = sum(item.metadata.get('word_count', 0) for item in processed_items) / len(processed_items)
+            print(f"Среднее количество слов в обработанной записи: {avg_words:.1f}")

@@ -1,0 +1,12 @@
+from abc import ABC, abstractmethod
+
+
+class BaseDataSource(ABC):
+
+    def __init__(self, name: str, source_type: str):
+        self.name = name
+        self.source_type = source_type
+
+    @abstractmethod
+    def fetch(self):
+        pass
