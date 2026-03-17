@@ -10,28 +10,18 @@ from src.hybrid_app import HybridApp
 from src.sources.async_web_source import AsyncWebNewsSource
 
 class AppRunner:
-
     def __init__(self, config_dict: Optional[Dict[str, Any]] = None):
         self.config = AppConfig()
         if config_dict:
             self.config.load(config_dict)
-        self.sources: List[AsyncBaseDataSource] = []
+        self.sources = []
         self.presenter = ConsolePresenter()
         self.last_result = None
 
     def _create_sources(self):
+        self.sources = []
         for source_cfg in self.config.sources:
-            source_type = source_cfg.get('type')
-            if source_type == 'web':
-                source = AsyncWebNewsSource(
-                    base_url=source_cfg['base_url'],
-                    name=source_cfg.get('name', 'Web News'),
-                    max_concurrent=source_cfg.get('max_concurrent', 3),
-                    max_retries=source_cfg.get('max_retries', 3),
-                    request_delay=source_cfg.get('request_delay', 0.5)
-                )
-            else:
-                source = SourceFactory.create_source(source_cfg)
+            source = SourceFactory.create_source(source_cfg)
             self.sources.append(source)
 
     def _create_strategy(self):
